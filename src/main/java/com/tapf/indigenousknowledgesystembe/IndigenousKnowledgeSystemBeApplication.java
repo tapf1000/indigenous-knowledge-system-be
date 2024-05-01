@@ -1,0 +1,13 @@
+package com.tapf.indigenousknowledgesystembe;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class IndigenousKnowledgeSystemBeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(IndigenousKnowledgeSystemBeApplication.class, args);
+    }
+
+}
