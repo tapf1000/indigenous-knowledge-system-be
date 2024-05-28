@@ -21,7 +21,7 @@ public class CategoryValue {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "characteristic_evaluation_id")
     private CharacteristicEvaluation characteristicEvaluation;
 }

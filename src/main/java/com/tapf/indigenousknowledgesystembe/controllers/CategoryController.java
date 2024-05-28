@@ -27,7 +27,7 @@ public class CategoryController {
         return categoryRequestHandlerService.getCategories();
     }
 
-    @GetMapping("/categories/{cat}")
+    @GetMapping("/category/{cat}")
     public CategoryDto getCategory(@PathVariable String cat){
         return categoryRequestHandlerService.getCategory(cat);
     }

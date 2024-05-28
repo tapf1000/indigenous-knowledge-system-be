@@ -15,6 +15,6 @@ public class CategoryDto {
 
     @Override
     public String toString(){
-        return "{\ncatName: "+catName+", \ncategoryValues: ["+categoryValues.stream().map(c -> c.toString()).toList()+"\n]\n}";
+        return "\n{\n\tcatName: "+catName+", \n\tcategoryValues: "+categoryValues.stream().map(c -> c.toString()).toList()+"\n}";
     }
 }

@@ -4,5 +4,5 @@ import com.tapf.indigenousknowledgesystembe.dto.CharacteristicEvaluationDto;
 
 public interface CharacteristicEvaluationHandlerService {
 
-    CharacteristicEvaluationDto getCharacteristicEvaluation(Long catVal);
+    CharacteristicEvaluationDto getCharacteristicEvaluation(String catVal);
 }

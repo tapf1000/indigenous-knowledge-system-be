@@ -9,6 +9,7 @@ import com.tapf.indigenousknowledgesystembe.service.CategoryValueRequestHandlerS
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.*;
 import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.categoryValueToCategoryDtoMapper;
@@ -27,7 +28,7 @@ public class CategoryValueRequestHandlerServiceImpl implements CategoryValueRequ
     }
 
     @Override
-    public List<CategoryValueDto> getCategoriesValues() {
+    public List<CategoryValueDto> getAllCategoriesValues() {
         return categoryValueRepository.findAll()
                 .stream()
                 .map(c -> categoryValuesToCategoryValuesDto(c))
@@ -35,8 +36,16 @@ public class CategoryValueRequestHandlerServiceImpl implements CategoryValueRequ
     }
 
     @Override
-    public CategoryValueDto getCategoryValue(String catValName) {
-        return categoryValuesToCategoryValuesDto(categoryValueRepository.findCategoryValueByVal(catValName));
+    public List<CategoryValueDto> getCategoryValues(String catValName) {
+        var cat = categoryRepository.findCategoryByCatName(catValName);
+        if (Objects.nonNull(cat)){
+           return categoryValueRepository.findCategoryValueByCategory(cat)
+                    .stream()
+                    .map(c -> categoryValuesToCategoryValuesDto(c))
+                    .toList();
+        }
+        else
+            return null;
     }
 
     @Override
@@ -47,12 +56,5 @@ public class CategoryValueRequestHandlerServiceImpl implements CategoryValueRequ
             categoryValue = categoryValueDtoToCategoryValue(categoryValueDto, category);
         else return null;
         return categoryValueToCategoryDtoMapper(categoryValueRepository.save(categoryValue));
-    }
-
-    public List<CategoryValueDto> getCategoryValuesByCategory(Long cat){
-        Category category = categoryRepository.findById(cat).get();
-        return categoryValueRepository.getCategoryValuesByCategory(category)
-                .stream()
-                .map(c -> categoryValueToCategoryDtoMapper(c)).toList();
     }
 }

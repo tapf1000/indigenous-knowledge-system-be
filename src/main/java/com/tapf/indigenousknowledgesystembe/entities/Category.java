@@ -20,6 +20,6 @@ public class Category {
 
     String catName;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<CategoryValue> categoryValues = new ArrayList<>();
 }

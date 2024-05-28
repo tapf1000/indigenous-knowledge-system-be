@@ -2,19 +2,20 @@ package com.tapf.indigenousknowledgesystembe.service.impl;
 
 import com.tapf.indigenousknowledgesystembe.dto.CategoryDto;
 import com.tapf.indigenousknowledgesystembe.entities.Category;
+import com.tapf.indigenousknowledgesystembe.entities.CategoryValue;
 import com.tapf.indigenousknowledgesystembe.repositories.CategoryRepository;
 import com.tapf.indigenousknowledgesystembe.repositories.CategoryValueRepository;
 import com.tapf.indigenousknowledgesystembe.repositories.CharacteristicEvaluationRepository;
 import com.tapf.indigenousknowledgesystembe.service.CategoryRequestHandlerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.categoryDtoToCategory;
-import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.categoryToCategoryDtoMapper;
+import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.*;
+import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.categoryValueDtoToCategoryValue;
 
+@Slf4j
 @Service
 public class CategoryRequestHandlerServiceImpl implements CategoryRequestHandlerService {
 
@@ -22,7 +23,6 @@ public class CategoryRequestHandlerServiceImpl implements CategoryRequestHandler
     CategoryValueRepository categoryValueRepository;
     CharacteristicEvaluationRepository characteristicEvaluationRepository;
 
-    private final Logger LOGGER = LoggerFactory.getLogger(CategoryRequestHandlerServiceImpl.class);
     public CategoryRequestHandlerServiceImpl(
             CategoryRepository categoryRepository,
             CategoryValueRepository categoryValueRepository,
@@ -48,11 +48,28 @@ public class CategoryRequestHandlerServiceImpl implements CategoryRequestHandler
 
     @Override
     public CategoryDto addCategory(CategoryDto categoryDto) {
+        log.info("categoryDto name: {}", categoryDto.toString());
         var existingCat = categoryRepository.findCategoryByCatName(categoryDto.getCatName());
         Category category = categoryDtoToCategory(categoryDto);
         if (existingCat != null){
             category.setId(existingCat.getId());
         }
-        return categoryToCategoryDtoMapper(categoryRepository.save(category));
+        var savedCategory = categoryRepository.save(category);
+        addCategoryTransientEntities(savedCategory);
+        return categoryToCategoryDtoMapper(savedCategory);
+    }
+
+    private void addCategoryTransientEntities(Category category){
+        category.getCategoryValues().forEach(
+                cv -> {
+                    var ce = characteristicEvaluationRepository.save(cv.getCharacteristicEvaluation());
+                    cv.setCharacteristicEvaluation(ce);
+                    categoryValueRepository.save(cv);
+                }
+        );
+    }
+
+    private void addCharacteristicEvaluation(){
+
     }
 }

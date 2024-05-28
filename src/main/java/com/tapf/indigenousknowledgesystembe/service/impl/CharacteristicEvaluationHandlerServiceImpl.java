@@ -6,6 +6,7 @@ import com.tapf.indigenousknowledgesystembe.repositories.CategoryValueRepository
 import com.tapf.indigenousknowledgesystembe.repositories.CharacteristicEvaluationRepository;
 import com.tapf.indigenousknowledgesystembe.service.CharacteristicEvaluationHandlerService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.characteristicEvaluationToCharacteristicEvaluationDto;
 
@@ -24,10 +25,12 @@ public class CharacteristicEvaluationHandlerServiceImpl implements Characteristi
     }
 
     @Override
-    public CharacteristicEvaluationDto getCharacteristicEvaluation(Long catVal) {
-        CategoryValue categoryValue = categoryValueRepository.findById(catVal).get();
-        return characteristicEvaluationToCharacteristicEvaluationDto(
+    public CharacteristicEvaluationDto getCharacteristicEvaluation(String catVal) {
+        CategoryValue categoryValue = categoryValueRepository.findCategoryValueByVal(catVal);
+        if (categoryValue != null)
+            return characteristicEvaluationToCharacteristicEvaluationDto(
                 characteristicEvaluationRepository.findCharacteristicEvaluationByCategoryValue(categoryValue)
-        );
+            );
+        throw new RuntimeException("No resource for category value "+catVal);
     }
 }
