@@ -8,9 +8,11 @@ import com.tapf.indigenousknowledgesystembe.repositories.CategoryValueRepository
 import com.tapf.indigenousknowledgesystembe.repositories.CharacteristicEvaluationRepository;
 import com.tapf.indigenousknowledgesystembe.service.CategoryRequestHandlerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.*;
 import static com.tapf.indigenousknowledgesystembe.util.EntityToDtoMapper.categoryValueDtoToCategoryValue;
@@ -55,21 +57,23 @@ public class CategoryRequestHandlerServiceImpl implements CategoryRequestHandler
             category.setId(existingCat.getId());
         }
         var savedCategory = categoryRepository.save(category);
-        addCategoryTransientEntities(savedCategory);
+        addCategoryTransientEntities(category);
         return categoryToCategoryDtoMapper(savedCategory);
     }
 
     private void addCategoryTransientEntities(Category category){
         category.getCategoryValues().forEach(
-                cv -> {
+            cv -> {
+                var _cv = categoryValueRepository.findCategoryValueByVal(cv.getVal());
+                if(Objects.isNull(_cv)){
                     var ce = characteristicEvaluationRepository.save(cv.getCharacteristicEvaluation());
                     cv.setCharacteristicEvaluation(ce);
                     categoryValueRepository.save(cv);
+                }else{
+                    _cv.setCharacteristicEvaluation(cv.getCharacteristicEvaluation());
+                    categoryValueRepository.save(_cv);
                 }
+            }
         );
-    }
-
-    private void addCharacteristicEvaluation(){
-
     }
 }
